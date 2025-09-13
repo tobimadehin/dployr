@@ -1,4 +1,4 @@
-name: Deploy Dployr Base
+name: Deploy Base
 
 on:
   push:

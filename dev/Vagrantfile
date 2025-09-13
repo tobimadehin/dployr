@@ -1,4 +1,4 @@
-# Vagrantfile - Simple dployr.io testing setup
+# Vagrantfile - Simple dployr testing setup
 # -*- mode: ruby -*-
 
 # All distributions to test
@@ -16,7 +16,7 @@ DISTROS = {
 
 Vagrant.configure("2") do |config|
   config.vm.boot_timeout = 600  # 10 minutes
-  config.vm.network "forwarded_port", guest: 7879, host: 7879
+  config.vm.network "forwarded_port", guest: 8001, host: 2345
   config.vm.network "forwarded_port", guest: 8000, host: 8001
   config.vm.network "forwarded_port", guest: 6001, host: 6001
   config.vm.network "forwarded_port", guest: 6002, host: 6002
@@ -42,14 +42,15 @@ Vagrant.configure("2") do |config|
         v.customize ["modifyvm", :id, "--natdnsproxy1", "on"]
       
       # Mount local static folder into VM
-      vm.vm.synced_folder "./base/public", "/server", create: true
+      vm.vm.synced_folder "../base/public", "/server", create: true
+      vm.vm.synced_folder "../cli", "/dployr/cli", create: true
       end
       
       # System update
       vm.vm.provision "shell", inline: <<-SHELL
         echo "Updating #{name}..."
         if command -v apt >/dev/null; then
-          apt update -qq && apt upgrade -y -qq
+          apt update -qq && apt upgrade -y -qq && sudo apt-get install -y snapd && snap install go --classic
         elif command -v dnf >/dev/null; then
           dnf update -y -q
         fi
